@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+<title> {% block title %}Home{% endblock %}</title>
+{% block content %}
+
+<h1 align="center">Forum Posts</h1>
+<ul class="list-group list-group-flush" id="forum">
+    {% for forum in user.forum %}
+    <li class="list-group-item">{{ forum.Post }}
+        <button type="button" class="close" onclick="deleteForum({{ forum.id }})">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </li>
+    {% endfor %}
+</ul>
+
+<form method="post">
+    <textarea name="forum" id="forum" class="form-control"></textarea>
+    <br />
+    <div align="center">
+        <button type="submit" class="btn btn-primary mt-3">Submit</button>
+    </div>
+</form>
+{% endblock %}
