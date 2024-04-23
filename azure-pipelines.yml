@@ -6,13 +6,13 @@ variables:
   azureServiceConnectionId: '5a159d09-c08f-4edd-9ff2-f46cb27e3381'
 
   # Web app name
-  webAppName: 'RoseteProject'
+  webAppName: 'ChicoSeniorPro'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
   # Environment name
-  environmentName: 'RoseteProject'
+  environmentName: 'ChicoSeniorPro'
 
   # Project root folder. Point to the folder containing main.py file.
   projectRoot: '$(System.DefaultWorkingDirectory)'
@@ -75,7 +75,7 @@ stages:
             displayName: 'Use Python version'
 
           - task: AzureWebApp@1
-            displayName: 'Deploy Azure Web App : RoseteProject'
+            displayName: 'Deploy Azure Web App : ChicoSeniorPro'
             inputs:
               azureSubscription: $(azureServiceConnectionId)
               appName: $(webAppName)
