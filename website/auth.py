@@ -11,7 +11,7 @@ auth = Blueprint('auth', __name__)
 CLIENT_ID = '0473c1f2-3345-4fcb-bb22-cd99fe3dcc9a'
 CLIENT_SECRET = '8749d86f-b2cf-4b0a-9509-255863951121'
 AUTHORITY = 'https://RoseteChico.b2clogin.com/RoseteChico.onmicrosoft.com/oauth2/v2.0/'
-REDIRECT_PATH = 'https://chicoseniorpro.azurewebsites.net/login'  # Update this with your actual redirect URL
+REDIRECT_PATH = 'https://chicoseniorpro.azurewebsites.net'  # Update this with your actual redirect URL
 SCOPE = ["openid", "offline_access", "profile", "email", "User.Read"]
 
 @auth.route('/login', methods=['GET', 'POST'])
