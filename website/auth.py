@@ -8,10 +8,10 @@ from .models import User
 auth = Blueprint('auth', __name__)
 
 # Azure AD B2C configuration
-CLIENT_ID = '0473c1f2-3345-4fcb-bb22-cd99fe3dcc9a'
-CLIENT_SECRET = '8749d86f-b2cf-4b0a-9509-255863951121'
-AUTHORITY = 'https://rosetechico.b2clogin.com/RoseteChico.onmicrosoft.com/v2.0/'
-REDIRECT_PATH = 'https://chicoseniorpro.azurewebsites.net/login'
+CLIENT_ID = 'your_client_id_here'
+CLIENT_SECRET = 'your_client_secret_here'
+AUTHORITY = 'https://your_tenant_name.b2clogin.com/your_tenant_id/v2.0/'
+REDIRECT_PATH = 'https://your_web_app_domain/login'  # Update this with your actual redirect URL
 SCOPE = ["openid", "offline_access", "your_custom_scope"]
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -65,33 +65,33 @@ def signup():
             return redirect(url_for('views.home'))
 
     return render_template("sign_up.html")
-    
+
 @auth.route('/getAToken')
 def get_token():
-    # Validate the token response and handle user authentication
-    if 'code' in request.args:
-        result = _build_msal_app().acquire_token_by_authorization_code(
-            request.args['code'],
-            scopes=SCOPE,
-            redirect_uri=url_for('auth.get_token', _external=True))
+    result = _build_msal_app().initiate_auth_code_flow(
+        scopes=SCOPE,
+        redirect_uri=url_for('auth.get_token', _external=True))
 
-        if 'error' in result:
-            flash('Authentication failed: ' + result['error'], category='error')
-            return redirect(url_for('auth.login'))
+    return redirect(result['auth_uri'])
 
-        user = User.query.filter_by(email=result['id_token_claims']['email']).first()
-        if user:
-            login_user(user, remember=True)
-            flash('Logged in successfully!', category='success')
-            return redirect(url_for('views.home'))
-        else:
-            flash('Email does not exist.', category='error')
+@auth.route('/getAToken/redirect')
+def get_token_redirect():
+    result = _build_msal_app().acquire_token_by_auth_code_flow(request.args)
+    if 'error' in result:
+        flash('Authentication failed: ' + result['error'], category='error')
+        return redirect(url_for('auth.login'))
 
-    return redirect(url_for('auth.login'))
+    user = User.query.filter_by(email=result['id_token_claims']['email']).first()
+    if user:
+        login_user(user, remember=True)
+        flash('Logged in successfully!', category='success')
+        return redirect(url_for('views.home'))
+    else:
+        flash('Email does not exist.', category='error')
+        return redirect(url_for('auth.login'))
 
 def _build_msal_app():
     return ConfidentialClientApplication(
         CLIENT_ID,
         authority=AUTHORITY,
         client_credential=CLIENT_SECRET)
-
