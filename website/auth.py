@@ -1,4 +1,3 @@
-'''Auth.py file'''
 from flask import Blueprint, redirect, render_template, request, url_for, flash
 from flask_login import login_user, login_required, logout_user, current_user
 from msal import ConfidentialClientApplication
@@ -9,11 +8,11 @@ from . import db
 auth = Blueprint('auth', __name__)
 
 # Azure AD B2C configuration
-CLIENT_ID = '0473c1f2-3345-4fcb-bb22-cd99fe3dcc9a'  # Replace with your actual client ID
-CLIENT_SECRET = '8749d86f-b2cf-4b0a-9509-255863951121'  # Replace with your actual client secret
-AUTHORITY = 'https://RoseteChico.b2clogin.com/RoseteChico.onmicrosoft.com/B2C_1_SeniorEmail'
-REDIRECT_PATH = 'https://chicoseniorpro.azurewebsites.net'  # Update this with your actual redirect URL
-SCOPE = ["openid", "offline_access"]  # Update with the scopes required by your application
+CLIENT_ID = '0473c1f2-3345-4fcb-bb22-cd99fe3dcc9a'
+CLIENT_SECRET = '8749d86f-b2cf-4b0a-9509-255863951121'
+AUTHORITY = 'https://RoseteChico.b2clogin.com/RoseteChico.onmicrosoft.com/oauth2/v2.0/'
+REDIRECT_PATH = 'https://chicoseniorpro.azurewebsites.net/login'  # Update this with your actual redirect URL
+SCOPE = ["openid", "offline_access", "profile", "email", "User.Read"]
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -71,7 +70,7 @@ def signup():
 def get_token():
     result = _build_msal_app().initiate_auth_code_flow(
         scopes=SCOPE,
-        redirect_uri=url_for('auth.get_token_redirect', _external=True))
+        redirect_uri=REDIRECT_PATH)
 
     return redirect(result['auth_uri'])
 
@@ -96,4 +95,3 @@ def _build_msal_app():
         CLIENT_ID,
         authority=AUTHORITY,
         client_credential=CLIENT_SECRET)
-
