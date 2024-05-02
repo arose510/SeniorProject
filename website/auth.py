@@ -1,71 +1,97 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, render_template, request, url_for, flash
+from flask_login import login_user, login_required, logout_user, current_user
+from msal import ConfidentialClientApplication
 from werkzeug.security import check_password_hash, generate_password_hash
 from . import db
-from flask_login import login_user, login_required, logout_user, current_user
-
 from .models import User
 
 auth = Blueprint('auth', __name__)
 
-@auth.route('/login', methods=['GET','POST'])
+# Azure AD B2C configuration
+CLIENT_ID = '0473c1f2-3345-4fcb-bb22-cd99fe3dcc9a'
+CLIENT_SECRET = '8749d86f-b2cf-4b0a-9509-255863951121'
+AUTHORITY = 'https://rosetechico.b2clogin.com/RoseteChico.onmicrosoft.com/v2.0/'
+REDIRECT_PATH = 'https://chicoseniorpro.azurewebsites.net/login'
+SCOPE = ["openid", "offline_access", "your_custom_scope"]
+
+@auth.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('views.home'))
+
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
 
         user = User.query.filter_by(email=email).first()
-        if user:
-            if check_password_hash(user.password, password):
-                flash('Logged in Successful!', category='successs')
-                login_user(user, remember=True)
-                return redirect(url_for('views.home'))
-            else:
-                flash('Incorrect password', category='error')
+        if user and check_password_hash(user.password, password):
+            login_user(user, remember=True)
+            flash('Logged in successfully!', category='success')
+            return redirect(url_for('views.home'))
         else:
-            flash('Email does not exist.', category='error')
-    return render_template("login.html", user=current_user)
+            flash('Incorrect email or password.', category='error')
+
+    return render_template("login.html")
 
 @auth.route('/logout')
 @login_required
 def logout():
     logout_user()
-    flash('Logout Successful.', category='success')
+    flash('Logged out successfully.', category='success')
     return redirect(url_for('auth.login'))
 
-@auth.route('/sign-up', methods=['GET','POST'])
+@auth.route('/sign-up', methods=['GET', 'POST'])
 def signup():
-    if request.method == "POST":
+    if current_user.is_authenticated:
+        return redirect(url_for('views.home'))
+
+    if request.method == 'POST':
         email = request.form.get('email')
-        fullname = request.form.get("fullname")
-        password1 = request.form.get('password1')
-        password2 = request.form.get('password2')
+        full_name = request.form.get('fullname')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
 
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
-            flash('User/Email already exists.', category='error')
-            return redirect(url_for('auth.signup'))
-
-        if len(email) < 4:
-            flash('Email must be greater than 3 characters.', category='error')
-        elif len(fullname) < 2:
-            flash('Fullname must be greater than 1 characters.', category='error')
-        elif password1 != password2:
-            flash('Passwords must match.', category='error')
-        elif len(password1) < 6:              
-            flash('Password must be greater than 5 characters.', category='error')
+        if User.query.filter_by(email=email).first():
+            flash('Email address already exists.', category='error')
+        elif password != confirm_password:
+            flash('Passwords do not match.', category='error')
         else:
-            # Generate hashed password using pbkdf2:sha256 method
-            hashed_password = generate_password_hash(password1, method='pbkdf2:sha256')
-
-            # Create new user and add to the database
-            new_user = User(email=email, full_name=fullname, password=hashed_password)
+            hashed_password = generate_password_hash(password)
+            new_user = User(email=email, full_name=full_name, password=hashed_password)
             db.session.add(new_user)
             db.session.commit()
-            
-            # Log in the newly created user
             login_user(new_user, remember=True)
-
             flash('Account created successfully!', category='success')
             return redirect(url_for('views.home'))
 
-    return render_template("sign_up.html", user=current_user)
+    return render_template("sign_up.html")
+    
+@auth.route('/getAToken')
+def get_token():
+    # Validate the token response and handle user authentication
+    if 'code' in request.args:
+        result = _build_msal_app().acquire_token_by_authorization_code(
+            request.args['code'],
+            scopes=SCOPE,
+            redirect_uri=url_for('auth.get_token', _external=True))
+
+        if 'error' in result:
+            flash('Authentication failed: ' + result['error'], category='error')
+            return redirect(url_for('auth.login'))
+
+        user = User.query.filter_by(email=result['id_token_claims']['email']).first()
+        if user:
+            login_user(user, remember=True)
+            flash('Logged in successfully!', category='success')
+            return redirect(url_for('views.home'))
+        else:
+            flash('Email does not exist.', category='error')
+
+    return redirect(url_for('auth.login'))
+
+def _build_msal_app():
+    return ConfidentialClientApplication(
+        CLIENT_ID,
+        authority=AUTHORITY,
+        client_credential=CLIENT_SECRET)
+

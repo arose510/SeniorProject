@@ -1,4 +1,4 @@
-{%  extends "base.html" %}
+{% extends "base.html" %}
 <title> {% block title %}Sign Up{% endblock %}</title>{% block content %}
 
 <form method="post">
@@ -52,5 +52,6 @@
     <button type = "submit" class="btn btn-primary">Submit</button>
 </form>
 
+<p align="center">Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
 
 {% endblock %}

@@ -3,8 +3,9 @@
 {% block content %}
 
 <h1 align="center">Forum Posts</h1>
+{% if current_user.is_authenticated %}
 <ul class="list-group list-group-flush" id="forum">
-    {% for forum in user.forum %}
+    {% for forum in current_user.forum %}
     <li class="list-group-item">{{ forum.Post }}
         <button type="button" class="close" onclick="deleteForum({{ forum.id }})">
             <span aria-hidden="true">&times;</span>
@@ -20,4 +21,7 @@
         <button type="submit" class="btn btn-primary mt-3">Submit</button>
     </div>
 </form>
+{% else %}
+<p align="center">Please <a href="{{ url_for('auth.get_token') }}">login</a> to view forum posts.</p>
+{% endif %}
 {% endblock %}
