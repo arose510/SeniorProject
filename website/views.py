@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, render_template, request, flash
-from flask_login import login_required, current_user  # Import current_user
+from flask_login import login_required, current_user
 from datetime import datetime  # Import datetime
 from .models import Forum
 from . import db
