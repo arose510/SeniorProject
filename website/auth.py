@@ -1,10 +1,10 @@
+'''Auth.py file'''
 from flask import Blueprint, redirect, render_template, request, url_for, flash
 from flask_login import login_user, login_required, logout_user, current_user
 from msal import ConfidentialClientApplication
 from werkzeug.security import check_password_hash, generate_password_hash
+from website.models import User
 from . import db
-from .models import User
-from auth import auth, get_token
 
 auth = Blueprint('auth', __name__)
 
