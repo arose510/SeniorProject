@@ -9,11 +9,11 @@ from . import db
 auth = Blueprint('auth', __name__)
 
 # Azure AD B2C configuration
-CLIENT_ID = 'your_client_id_here'
-CLIENT_SECRET = 'your_client_secret_here'
-AUTHORITY = 'https://your_tenant_name.b2clogin.com/your_tenant_id/v2.0/'
-REDIRECT_PATH = 'https://your_web_app_domain/login'  # Update this with your actual redirect URL
-SCOPE = ["openid", "offline_access", "your_custom_scope"]
+CLIENT_ID = '0473c1f2-3345-4fcb-bb22-cd99fe3dcc9a'  # Replace with your actual client ID
+CLIENT_SECRET = '8749d86f-b2cf-4b0a-9509-255863951121'  # Replace with your actual client secret
+AUTHORITY = 'https://RoseteChico.b2clogin.com/RoseteChico.onmicrosoft.com/B2C_1_SeniorEmail'
+REDIRECT_PATH = 'https://chicoseniorpro.azurewebsites.net'  # Update this with your actual redirect URL
+SCOPE = ["openid", "offline_access"]  # Update with the scopes required by your application
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -71,7 +71,7 @@ def signup():
 def get_token():
     result = _build_msal_app().initiate_auth_code_flow(
         scopes=SCOPE,
-        redirect_uri=url_for('auth.get_token', _external=True))
+        redirect_uri=url_for('auth.get_token_redirect', _external=True))
 
     return redirect(result['auth_uri'])
 
@@ -96,3 +96,4 @@ def _build_msal_app():
         CLIENT_ID,
         authority=AUTHORITY,
         client_credential=CLIENT_SECRET)
+
