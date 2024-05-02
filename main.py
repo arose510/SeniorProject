@@ -1,8 +1,8 @@
-from flask import Flask, redirect, url_for
-from website.auth import auth, get_token
+from flask import redirect, url_for
+from website import create_app
 
-app = Flask(__name__)
-app.register_blueprint(auth)
+# Create the Flask application instance using create_app function from website module
+app = create_app()
 
 # Route to handle the authentication callback from Microsoft
 @app.route('/getAToken')
