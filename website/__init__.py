@@ -1,4 +1,4 @@
-# Init.py
+# __init__.py
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
@@ -24,7 +24,7 @@ def create_app():
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
 
-    from .models import User, Forum
+    from .models import User, Forum, Task  # Import Task model
 
     # Create the database tables within the application context
     with app.app_context():
