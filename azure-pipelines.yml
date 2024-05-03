@@ -87,27 +87,3 @@ stages:
               package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
 
 
-# - stage: DeployToStorage
-#   displayName: 'Deploy to Azure Blob Storage'
-#   dependsOn: Build
-#   condition: succeeded()
-#   jobs:
-#   - deployment: DeploymentToStorageJob
-#     pool:
-#       vmImage: $(vmImageName)
-#     environment: $(environmentName)
-#     strategy:
-#       runOnce:
-#         deploy:
-#           steps:
-#           - task: AzureKeyVault@2
-#             inputs:
-#               azureSubscription: '$(azureServiceConnectionId)'
-#               KeyVaultName: 'rosetevault'
-#               SecretsFilter: '*'
-
-#           - script: |
-#               az login --service-principal -u $(serviceprincipal) -p $(serviceprincipalpassword) --tenant $(RBACtenentid)
-#               az storage blob upload-batch --destination containerrosete --source $(Build.ArtifactStagingDirectory) --account-name roseteazurestorage
-#             displayName: 'Upload Files to Azure Blob Storage'
-
