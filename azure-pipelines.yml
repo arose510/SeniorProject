@@ -101,7 +101,7 @@ stages:
           steps:
           - task: AzureKeyVault@2
             inputs:
-              azureSubscription: 'Azure for Students'
+              azureSubscription: 'PipelineCreate' 
               KeyVaultName: 'rosetevault'
               SecretsFilter: '*'
 
