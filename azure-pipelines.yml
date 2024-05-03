@@ -4,19 +4,19 @@ trigger:
 variables:
   # Azure Resource Manager connection created during pipeline creation
   azureServiceConnectionId: '6f068038-ff0f-4b33-85d7-2fedc53fbadd'
-
+  
   # Web app name
   webAppName: 'ChicoSeniorPro'
-
+  
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
-
+  
   # Environment name
   environmentName: 'ChicoSeniorPro'
-
+  
   # Project root folder. Point to the folder containing manage.py file.
   projectRoot: $(System.DefaultWorkingDirectory)
-
+  
   # Python version: 3.10
   pythonVersion: '3.10'
 
@@ -88,5 +88,5 @@ stages:
 
           # Use Azure CLI to create repository
           - script: |
-              az repos create --name "ChicoSeniorPro" --organization "https://dev.azure.com/your-organization" --project "YourProject" --output none
+              az repos create --name "ChicoSeniorPro" --organization "https://dev.azure.com/Rosete" --project "ChicoSeniorPro" --output none
             displayName: 'Create Azure Repo'
