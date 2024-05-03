@@ -1,3 +1,8 @@
+# Python to Linux Web App on Azure
+# Build your Python project and deploy it to Azure as a Linux Web App.
+# Change python version to one thats appropriate for your application.
+# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+
 trigger:
 - main
 
@@ -54,13 +59,6 @@ stages:
     - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
       displayName: 'Upload package'
       artifact: drop
-
-    - script: |
-        # Authenticate with Azure using the provided service principal credentials
-        az login --service-principal -u 0473c1f2-3345-4fcb-bb22-cd99fe3dcc9a -p 8749d86f-b2cf-4b0a-9509-255863951121 --tenant 3411742b-0e6e-4b8d-b642-44a241f10de3
-        # Create Azure Repo
-        az repos create --name ChicoSeniorPro --project ChicoSeniorPro --organization RoseteSenior
-      displayName: 'Create Azure Repo'
 
 - stage: Deploy
   displayName: 'Deploy Web App'
