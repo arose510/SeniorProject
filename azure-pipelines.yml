@@ -62,7 +62,7 @@ stages:
 
     # Azure Repos commands to create a new repository
     - script: |
-        az repos create --name $(Build.Repository.Name) --project "RoseteSenior" --organization "Rosete"
+        az repos create --name arose510/seniorproject --project "RoseteSenior" --organization "https://dev.azure.com/Rosete"
       displayName: 'Create Azure Repo'
 
 - stage: Deploy
