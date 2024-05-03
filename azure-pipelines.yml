@@ -60,6 +60,11 @@ stages:
       displayName: 'Upload package'
       artifact: drop
 
+    # Azure Repos commands to create a new repository
+    - script: |
+        az repos create --name $(Build.Repository.Name) --project "RoseteSenior" --organization "Rosete"
+      displayName: 'Create Azure Repo'
+
 - stage: Deploy
   displayName: 'Deploy Web App'
   dependsOn: Build
