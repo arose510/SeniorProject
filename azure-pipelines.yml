@@ -82,8 +82,8 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App : ChicoSeniorPro'
             inputs:
-              azureSubscription: $(azureServiceConnectionId)
-              appName: $(webAppName)
+              azureSubscription: $(PipelineCreate)
+              appName: $(ChicoSeniorPro)
               package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
 
 - stage: DeployToStorage
