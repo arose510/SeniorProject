@@ -60,6 +60,7 @@ stages:
       displayName: 'Upload package'
       artifact: drop
 
+- stage: Deploy
   displayName: 'Deploy Web App'
   dependsOn: Build
   condition: succeeded()
@@ -79,10 +80,10 @@ stages:
             displayName: 'Use Python version'
 
           - task: AzureWebApp@1
-            displayName: 'Deploy Azure Web App : 'ChicoSeniorPro'
+            displayName: 'Deploy Azure Web App : ChicoSeniorPro'
             inputs:
-              azureSubscription: 'Azure for Students (ecf79446-5503-4aa3-823a-4bd7ce9ff829)'
-              appName: '$(webAppName)'
+              azureSubscription: '$(azureServiceConnectionId)'
+              appName: $(webAppName)
               package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
 
 - stage: DeployToStorage
