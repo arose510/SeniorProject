@@ -1,8 +1,3 @@
-# Python to Linux Web App on Azure
-# Build your Python project and deploy it to Azure as a Linux Web App.
-# Change python version to one thats appropriate for your application.
-# https://docs.microsoft.com/azure/devops/pipelines/languages/python
-
 trigger:
 - main
 
@@ -85,3 +80,17 @@ stages:
               azureSubscription: $(azureServiceConnectionId)
               appName: $(webAppName)
               package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
+
+          # Add task to create repository in Azure Repos
+          - task: AzureReposCreateRepository@1
+            displayName: 'Create Azure Repo'
+            inputs:
+              azureSubscription: $(azureServiceConnectionId)
+              repositoryName: 'ChicoSeniorPro'  # You can adjust the repository name as needed
+            condition: |
+              and(
+                succeeded(),  # Ensure the previous tasks succeeded
+                ne(variables['Build.Reason'], 'PullRequest'),  # Skip for Pull request builds
+                eq(variables['Build.SourceBranch'], 'refs/heads/main'),  # Only create repo for main branch builds
+                ne(variables['Build.SourceRepository'], 'Azure Repos')  # Skip if source already Azure Repos
+              )
