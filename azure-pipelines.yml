@@ -104,6 +104,6 @@ stages:
               SourcePath: '$(Build.ArtifactStagingDirectory)'
               azureSubscription: $(azureServiceConnectionId)
               Destination: 'AzureBlob'
-              storage: 'roseteazurestorage' T
+              storage: 'roseteazurestorage' 
               ContainerName: 'containerrosete'
               outputStorageUri: 'https://roseteazurestorage.blob.core.windows.net/' 
