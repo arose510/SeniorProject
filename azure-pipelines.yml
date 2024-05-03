@@ -74,6 +74,11 @@ stages:
               versionSpec: '$(pythonVersion)'
             displayName: 'Use Python version'
 
+          # Add task to install Azure CLI
+          - script: |
+              curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+            displayName: 'Install Azure CLI'
+
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App : ChicoSeniorPro'
             inputs:
@@ -81,16 +86,7 @@ stages:
               appName: $(webAppName)
               package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
 
-          # Add task to create repository in Azure Repos
-          - task: AzureReposCreateRepository@1
+          # Use Azure CLI to create repository
+          - script: |
+              az repos create --name "ChicoSeniorPro" --organization "https://dev.azure.com/your-organization" --project "YourProject" --output none
             displayName: 'Create Azure Repo'
-            inputs:
-              azureSubscription: $(azureServiceConnectionId)
-              repositoryName: 'ChicoSeniorPro'  # You can adjust the repository name as needed
-            condition: |
-              and(
-                succeeded(),  # Ensure the previous tasks succeeded
-                ne(variables['Build.Reason'], 'PullRequest'),  # Skip for Pull request builds
-                eq(variables['Build.SourceBranch'], 'refs/heads/main'),  # Only create repo for main branch builds
-                ne(variables['Build.SourceRepository'], 'Azure Repos')  # Skip if source already Azure Repos
-              )
