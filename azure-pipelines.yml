@@ -71,6 +71,8 @@ stages:
         SmtpServer: 'smtp.gmail.com'
         SmtpPort: '465'
         SmtpUsername: 'alexrosete12@gmail.com'
+        SmtpPassword: 'jgop uadu iinf djan'
+        
         
 
 
