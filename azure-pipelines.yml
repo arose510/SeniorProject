@@ -28,13 +28,42 @@ variables:
 stages:
       
 # Notification Stage
-- stage: Notify
-  displayName: 'Send Email Notification'
+
+stages:
+- stage: Build
+  displayName: Build stage
   jobs:
-  - job: NotificationJob
+  - job: BuildJob
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: $(vmImageName)
     steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '$(pythonVersion)'
+      displayName: 'Use Python $(pythonVersion)'
+
+    - script: |
+        python -m venv antenv
+        source antenv/bin/activate
+        python -m pip install --upgrade pip
+        pip install setup
+        pip install -r requirements.txt
+      workingDirectory: $(projectRoot)
+      displayName: "Install requirements"
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive files'
+      inputs:
+        rootFolderOrFile: '$(projectRoot)'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        replaceExistingArchive: true
+
+    - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      displayName: 'Upload package'
+      artifact: drop
+
     - task: SendEmail@0
       inputs:
         To: 'arosete@csuchico.edu'
@@ -44,4 +73,6 @@ stages:
         Body: 'Success!'
         SmtpServer: 'smtp.gmail.com'
         SmtpPort: '587'
+
+
 
