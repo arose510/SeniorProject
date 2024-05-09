@@ -78,9 +78,7 @@ stages:
         SmtpServer: 'smtp.gmail.com'
         SmtpPort: '465'
         SmtpUsername: 'alexrosete12@gmail.com'
-        SmtpPassword: '$(GmailAPP)'
-    - script: echo $(GmailAPP)
-      displayName: 'Print SMTP Password'
+        SmtpPassword: 'jgop uadu iinf djan'
         
   
     
