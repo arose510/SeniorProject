@@ -26,39 +26,6 @@ variables:
   pythonVersion: '3.10'
 
 stages:
-- stage: Build
-  displayName: Build stage
-  jobs:
-  - job: BuildJob
-    pool:
-      vmImage: $(vmImageName)
-    steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '$(pythonVersion)'
-      displayName: 'Use Python $(pythonVersion)'
-
-    - script: |
-        python -m venv antenv
-        source antenv/bin/activate
-        python -m pip install --upgrade pip
-        pip install setup
-        pip install -r requirements.txt
-      workingDirectory: $(projectRoot)
-      displayName: "Install requirements"
-
-    - task: ArchiveFiles@2
-      displayName: 'Archive files'
-      inputs:
-        rootFolderOrFile: '$(projectRoot)'
-        includeRootFolder: false
-        archiveType: zip
-        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-        replaceExistingArchive: true
-
-    - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-      displayName: 'Upload package'
-      artifact: drop
       
 # Notification Stage
 - stage: Notify
@@ -68,14 +35,13 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - task: SendEmail@1
+    - task: SendEmail@0
       inputs:
-        To: 'arosete@csuchico.edu' # Email address of the recipient
-        Cc: 'alexrosete12@gmail.com' # Optional: CC email addresses separated by commas
-        From: 'alexrosete12@gmail.com' # Email address of the sender
-        Subject: 'Pipeline Status Notification' # Subject of the email
-        Body: 'Your pipeline has completed successfully.' # Body of the email
-        SmtpServer: 'smtp.gmail.com' # Gmail SMTP server address
-        SmtpPort: '587' # SMTP port (587 for STARTTLS)
-        EnableSsl: true # Set to true for STARTTLS encryption method
+        To: 'arosete@csuchico.edu'
+        CC: 'alexrosete12@gmail.com'
+        From: 'alexrosete12@gmail.com'
+        Subject: 'Notification of Build'
+        Body: 'Success!'
+        SmtpServer: 'smtp.gmail.com'
+        SmtpPort: '587'
 
