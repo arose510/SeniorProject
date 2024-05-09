@@ -68,11 +68,14 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - script: |
-        # Script to send email notification using mailx
-        echo "Your pipeline has completed successfully." | mailx -s "Pipeline Status Notification" alexrosete12@gmail.com
-      displayName: 'Send Email'
-
-
-
+    - task: SendEmail@1
+      inputs:
+        To: 'arosete@csuchico.edu' # Email address of the recipient
+        Cc: 'alexrosete12@gmail.com' # Optional: CC email addresses separated by commas
+        From: 'alexrosete12@gmail.com' # Email address of the sender
+        Subject: 'Pipeline Status Notification' # Subject of the email
+        Body: 'Your pipeline has completed successfully.' # Body of the email
+        SmtpServer: 'smtp.gmail.com' # Gmail SMTP server address
+        SmtpPort: '587' # SMTP port (587 for STARTTLS)
+        EnableSsl: true # Set to true for STARTTLS encryption method
 
