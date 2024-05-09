@@ -60,15 +60,19 @@ stages:
       displayName: 'Upload package'
       artifact: drop
       
-    - task: SendEmail@1
-      inputs:
-        To: 'alexrosete12@gmail.com'
-        CC: 'arosete@csuchico.edu'
-        From: 'alexrosete12@gmail.com'
-        Subject: 'Pipeline Status Notification'
-        Body: 'Your pipeline has completed successfully.'
-        BodyAsHtml: false
-        AddAttachment: false
+# Notification Stage
+- stage: Notify
+  displayName: 'Send Email Notification'
+  jobs:
+  - job: NotificationJob
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - script: |
+        # Script to send email notification using mailx
+        echo "Your pipeline has completed successfully." | mailx -s "Pipeline Status Notification" alexrosete12@gmail.com
+      displayName: 'Send Email'
+
 
 
 
