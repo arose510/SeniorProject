@@ -69,7 +69,7 @@ stages:
         Subject: 'Notification of Build'
         Body: 'Success!'
         SmtpServer: 'smtp.gmail.com'
-        SmtpPort: '587'
+        SmtpPort: '465'
 
 
 
