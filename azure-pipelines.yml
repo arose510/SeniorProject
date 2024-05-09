@@ -60,21 +60,28 @@ stages:
       displayName: 'Upload package'
       artifact: drop
 
-# Notification Stage
-- stage: Notify
-  displayName: 'Send Email Notification'
+- stage: Deploy
+  displayName: 'Deploy Web App'
+  dependsOn: Build
+  condition: succeeded()
   jobs:
-  - job: NotificationJob
+  - deployment: DeploymentJob
     pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - script: |
-        # Script to send email notification using sendmail
-        echo "Subject: Pipeline Status Notification" > email.txt
-        echo "" >> email.txt
-        echo "Your pipeline has completed successfully." >> email.txt
-        sendmail -t alexrosete12@gmail.com < email.txt
-      displayName: 'Send Email'
+      vmImage: $(vmImageName)
+    environment: $(environmentName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
 
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '$(pythonVersion)'
+            displayName: 'Use Python version'
 
-
+          - task: AzureWebApp@1
+            displayName: 'Deploy Azure Web App : ChicoSeniorPro'
+            inputs:
+              azureSubscription: $(azureServiceConnectionId)
+              appName: $(webAppName)
+              package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
