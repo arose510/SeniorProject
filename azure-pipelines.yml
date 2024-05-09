@@ -60,7 +60,7 @@ stages:
     - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
       displayName: 'Upload package'
       artifact: drop
-
+      
 - stage: SendEmail
   displayName: Send email stage
   jobs:
@@ -68,10 +68,6 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - script: |
-        echo "SMTP Password: $(Passwords.GmailAPP)"
-      displayName: 'Print SMTP Password for debugging'
-
     - task: SendEmail@0
       inputs:
         To: 'arosete@csuchico.edu'
@@ -83,6 +79,8 @@ stages:
         SmtpPort: '465'
         SmtpUsername: 'alexrosete12@gmail.com'
         SmtpPassword: '$(Passwords.GmailAPP)'
+    - script: echo $(Passwords.GmailAPP)
+      displayName: 'Print SMTP Password'
         
   
     
