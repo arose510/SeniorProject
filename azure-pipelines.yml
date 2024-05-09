@@ -68,6 +68,10 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
+    - script: |
+        echo "SMTP Password: $(Passwords.GmailAPP)"
+      displayName: 'Print SMTP Password for debugging'
+
     - task: SendEmail@0
       inputs:
         To: 'arosete@csuchico.edu'
