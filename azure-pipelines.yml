@@ -94,9 +94,10 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - task: SendEmail@1
+    - script: |
+        # Script to send email notification
+        # Replace the placeholders with your SMTP server details and email addresses
+        # Example script using mailx command on Linux
+        echo "Your pipeline has completed successfully." | mailx -s "Pipeline Status Notification" alexrosete12@gmail.com
       displayName: 'Send Email'
-      inputs:
-        To: 'alexrosete12@gmail.com'
-        Subject: 'Pipeline Status Notification'
-        Body: 'Your pipeline has completed successfully.'
+
