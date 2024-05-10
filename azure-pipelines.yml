@@ -25,13 +25,6 @@ variables:
   # Python version: 3.10
   pythonVersion: '3.10'
 
-  # Add your additional variables here
-  - group: Passwords
-  - name: buildConfiguration
-    value: 'Release'
-  - name: GmailPASS
-    value: '$(GmailAPP)'
-
 stages:
 #Build Stage
 - stage: Build
@@ -68,52 +61,50 @@ stages:
       displayName: 'Upload package'
       artifact: drop
 
-stages:
-#Build Stage
-- stage: Build
-  displayName: Build stage
+#Deploying the App to Azure
+- stage: Deploy
+  displayName: 'Deploy Web App'
+  dependsOn: Build
+  condition: succeeded()
   jobs:
-  - job: BuildJob
+  - deployment: DeploymentJob
     pool:
       vmImage: $(vmImageName)
-    steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '$(pythonVersion)'
-      displayName: 'Use Python $(pythonVersion)'
+    environment: $(environmentName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
 
-    - script: |
-        python -m venv antenv
-        source antenv/bin/activate
-        python -m pip install --upgrade pip
-        pip install setup
-        pip install -r requirements.txt
-      workingDirectory: $(projectRoot)
-      displayName: "Install requirements"
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '$(pythonVersion)'
+            displayName: 'Use Python version'
 
-    - task: ArchiveFiles@2
-      displayName: 'Archive files'
-      inputs:
-        rootFolderOrFile: '$(projectRoot)'
-        includeRootFolder: false
-        archiveType: zip
-        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-        replaceExistingArchive: true
+          - task: AzureWebApp@1
+            displayName: 'Deploy Azure Web App : ChicoSeniorPro'
+            inputs:
+              azureSubscription: $(azureServiceConnectionId)
+              appName: $(webAppName)
+              package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
 
-    - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-      displayName: 'Upload package'
-      artifact: drop
-      
-- stage: PrintGoogleSMTPPassword
-  displayName: Print Google SMTP Password
+# Notification Stage to send emails to recipients who need to know
+- stage: SendEmail
+  displayName: Send email stage
   jobs:
-  - job: PrintGoogleSMTPPasswordJob
+  - job: SendEmailJob
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - task: PowerShell@2
+    - task: SendEmail@0
       inputs:
-        targetType: 'inline'
-        script: |
-          echo 'Google SMTP Password:'
-          echo '$(GmailPASS)'
+        To: 'arosete@csuchico.edu'
+        CC: 'alexrosete12@gmail.com'
+        From: 'alexrosete12@gmail.com'
+        Subject: 'Notification of Build'
+        Body: 'Success!'
+        SmtpServer: 'smtp.gmail.com'
+        SmtpPort: '465'
+        SmtpUsername: 'alexrosete12@gmail.com'
+        SmtpPassword: 'jgop uadu iinf djan'
+
