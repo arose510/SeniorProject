@@ -1,83 +1,24 @@
-# Python to Linux Web App on Azure
-# Build your Python project and deploy it to Azure as a Linux Web App.
-# Change python version to one that's appropriate for your application.
-# https://docs.microsoft.com/azure/devops/pipelines/languages/python
-
 trigger:
 - main
 
 variables:
-  # Azure Resource Manager connection created during pipeline creation
-  azureServiceConnectionId: '6f068038-ff0f-4b33-85d7-2fedc53fbadd'
-
-  # Web app name
-  webAppName: 'ChicoSeniorPro'
-
-  # Agent VM image name
-  vmImageName: 'ubuntu-latest'
-
-  # Environment name
-  environmentName: 'ChicoSeniorPro'
-
-  # Project root folder. Point to the folder containing manage.py file.
-  projectRoot: $(System.DefaultWorkingDirectory)
-
-  # Python version: 3.10
-  pythonVersion: '3.10'
+- group: Password
+- name: buildConfiguration
+  value: 'Release'
+- name: GmailPASS
+  value: '$(GmailAPP)'
 
 stages:
-#Build Stage
-- stage: Build
-  displayName: Build stage
+- stage: PrintGoogleSMTPPassword
+  displayName: Print Google SMTP Password
   jobs:
-  - job: BuildJob
-    pool:
-      vmImage: $(vmImageName)
-    steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '$(pythonVersion)'
-      displayName: 'Use Python $(pythonVersion)'
-
-    - script: |
-        python -m venv antenv
-        source antenv/bin/activate
-        python -m pip install --upgrade pip
-        pip install setup
-        pip install -r requirements.txt
-      workingDirectory: $(projectRoot)
-      displayName: "Install requirements"
-
-    - task: ArchiveFiles@2
-      displayName: 'Archive files'
-      inputs:
-        rootFolderOrFile: '$(projectRoot)'
-        includeRootFolder: false
-        archiveType: zip
-        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-        replaceExistingArchive: true
-
-    - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-      displayName: 'Upload package'
-      artifact: drop
-
-# Notification Stage to send emails to recipients who need to know
-- stage: SendEmail
-  displayName: Send email stage
-  jobs:
-  - job: SendEmailJob
+  - job: PrintGoogleSMTPPasswordJob
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - task: SendEmail@0
+    - task: PowerShell@2
       inputs:
-        To: 'arosete@csuchico.edu'
-        CC: 'alexrosete12@gmail.com'
-        From: 'alexrosete12@gmail.com'
-        Subject: 'Notification of Build'
-        Body: 'Success!'
-        SmtpServer: 'smtp.gmail.com'
-        SmtpPort: '465'
-        SmtpUsername: 'alexrosete12@gmail.com'
-        SmtpPassword: '$(Passwords.GmailAPP)'
-
+        targetType: 'inline'
+        script: |
+          echo 'Google SMTP Password:'
+          echo '$(GmailPASS)'
