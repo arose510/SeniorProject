@@ -66,3 +66,23 @@ stages:
     steps:
     - script: echo "SMTP Password: $(Passwords.GmailAPP)"
       displayName: 'Debug SMTP Password'
+
+# Notification Stage to send emails to recipients who need to know
+- stage: SendEmail
+  displayName: Send email stage
+  jobs:
+  - job: SendEmailJob
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: SendEmail@0
+      inputs:
+        To: 'arosete@csuchico.edu'
+        CC: 'alexrosete12@gmail.com'
+        From: 'alexrosete12@gmail.com'
+        Subject: 'Notification of Build'
+        Body: 'Success!'
+        SmtpServer: 'smtp.gmail.com'
+        SmtpPort: '465'
+        SmtpUsername: 'alexrosete12@gmail.com'
+        SmtpPassword: '$(Passwords.GmailAPP)'
