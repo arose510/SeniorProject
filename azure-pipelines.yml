@@ -56,13 +56,10 @@ stages:
           displayName: 'Upload package'
           artifact: drop
 
-# Debugging Stage to print SMTP password
-- stage: Debug
-  displayName: Debugging stage
-  jobs:
-    - job: DebuggingJob
-      pool:
-        vmImage: 'ubuntu-latest'
-      steps:
-        - script: echo "SMTP Password: $(Passwords.GmailAPP)"
+        # PowerShell script for debugging SMTP password
+        - task: PowerShell@2
           displayName: 'Debug SMTP Password'
+          inputs:
+            targetType: 'inline'
+            script: |
+              Write-Host "SMTP Password: $(Passwords.GmailAPP)"
