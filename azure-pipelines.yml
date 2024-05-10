@@ -61,33 +61,6 @@ stages:
       displayName: 'Upload package'
       artifact: drop
 
-#Deploying the App to Azure
-- stage: Deploy
-  displayName: 'Deploy Web App'
-  dependsOn: Build
-  condition: succeeded()
-  jobs:
-  - deployment: DeploymentJob
-    pool:
-      vmImage: $(vmImageName)
-    environment: $(environmentName)
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-
-          - task: UsePythonVersion@0
-            inputs:
-              versionSpec: '$(pythonVersion)'
-            displayName: 'Use Python version'
-
-          - task: AzureWebApp@1
-            displayName: 'Deploy Azure Web App : ChicoSeniorPro'
-            inputs:
-              azureSubscription: $(azureServiceConnectionId)
-              appName: $(webAppName)
-              package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
-
 # Notification Stage to send emails to recipients who need to know
 - stage: SendEmail
   displayName: Send email stage
@@ -106,5 +79,5 @@ stages:
         SmtpServer: 'smtp.gmail.com'
         SmtpPort: '465'
         SmtpUsername: 'alexrosete12@gmail.com'
-        SmtpPassword: 'jgop uadu iinf djan'
+        SmtpPassword: '$(Passwords.Gmailapp)'
 
