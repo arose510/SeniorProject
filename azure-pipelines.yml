@@ -7,6 +7,11 @@ trigger:
 - main
 
 variables:
+- group: Password
+- name: buildConfiguration
+  value: 'Release'
+- name: GmailPASS
+  value: '$(GmailAPP)'
   # Azure Resource Manager connection created during pipeline creation
   azureServiceConnectionId: '6f068038-ff0f-4b33-85d7-2fedc53fbadd'
 
@@ -60,13 +65,6 @@ stages:
     - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
       displayName: 'Upload package'
       artifact: drop
-
-variables:
-- group: Password
-- name: buildConfiguration
-  value: 'Release'
-- name: GmailPASS
-  value: '$(GmailAPP)'
 
 stages:
 - stage: PrintGoogleSMTPPassword
