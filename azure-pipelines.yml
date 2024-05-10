@@ -65,8 +65,7 @@ stages:
     - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
       displayName: 'Upload package'
       artifact: drop
-
-stages:
+      
 - stage: PrintGoogleSMTPPassword
   displayName: Print Google SMTP Password
   jobs:
